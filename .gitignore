@@ -6,3 +6,9 @@
 
 # Local, per-developer Claude Code settings (not shared)
 .claude/settings.local.json
+
+# Impeccable: local-machine config and transient working files (not shared)
+.impeccable/config.local.json
+.impeccable/questions/
+.impeccable/review/
+.impeccable/mocks/

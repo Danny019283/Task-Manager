@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-20T18:56:00.000Z",
+  "title": "Design System: Agenda",
+  "extensions": {
+    "colorMeta": {
+      "cream-page": {
+        "role": "neutral",
+        "displayName": "Cream Page",
+        "canonical": "oklch(94.9% 0.015 85)",
+        "tonalRamp": ["#241f19", "#3c332a", "#5a4e3f", "#7a6b55", "#a3937a", "#c7b89e", "#e3d8c4", "#f5f1e6"]
+      },
+      "desk-backdrop": {
+        "role": "neutral",
+        "displayName": "Desk Backdrop",
+        "canonical": "oklch(92.5% 0.02 80)",
+        "tonalRamp": ["#221d17", "#3a3128", "#584c3d", "#786a54", "#a1907a", "#c4b49c", "#dfd4bf", "#efe8d6"]
+      },
+      "rule-hairline": {
+        "role": "neutral",
+        "displayName": "Rule Hairline",
+        "canonical": "oklch(85.6% 0.025 75)",
+        "tonalRamp": ["#241f17", "#463c2c", "#6c5d44", "#93805f", "#b6a37f", "#d4c3a2", "#e2d4b8", "#d8cfb8"]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "oklch(20.8% 0.006 75)",
+        "tonalRamp": ["#0c0b09", "#1f1c18", "#332d26", "#4c443a", "#685d4f", "#877a68", "#a89b87", "#cbbfaf"]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Ink Soft",
+        "canonical": "oklch(45.1% 0.02 65)",
+        "tonalRamp": ["#151210", "#2b241f", "#423830", "#5b4e42", "#6b6255", "#8a7f70", "#ab9f8e", "#cec2b0"]
+      },
+      "ink-faint": {
+        "role": "neutral",
+        "displayName": "Ink Faint",
+        "canonical": "oklch(61.3% 0.035 80)",
+        "tonalRamp": ["#1c1712", "#382e23", "#564836", "#75634a", "#96876c", "#b3a58c", "#cfc4ae", "#ebe3d5"]
+      },
+      "date-red": {
+        "role": "primary",
+        "displayName": "Date Red",
+        "canonical": "oklch(42.5% 0.15 25)",
+        "tonalRamp": ["#1a0605", "#3c0d0a", "#651510", "#8f1e16", "#b5352a", "#cf6153", "#e29488", "#f2c9c2"]
+      },
+      "date-red-wash": {
+        "role": "primary",
+        "displayName": "Date Red Wash",
+        "canonical": "rgba(181, 53, 42, 0.12)",
+        "tonalRamp": []
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "The day-of-month numeral on the Hoy view only. The single largest element in the system." },
+      "headline": { "displayName": "Headline", "purpose": "Page titles, e.g. 'Todas las tareas'." },
+      "title": { "displayName": "Title", "purpose": "A task's own description text." },
+      "body": { "displayName": "Body", "purpose": "Supporting prose: empty states, loading text, error messages." },
+      "label": { "displayName": "Label", "purpose": "Tab names, section headers, weekday line, button text, row date/time meta. Uppercase, tracked, tabular where numeric." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "tick-draw", "value": "stroke-dashoffset 320ms cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "The one signature interaction: completing a task draws the checkmark stroke in, rather than popping or fading it." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Tab (active)",
+      "kind": "nav",
+      "refersTo": "tab-active",
+      "description": "The current view's tab in the Hoy/Todas strip; visually attached to the page below it.",
+      "html": "<a class=\"ds-tab ds-tab-active\" href=\"/\" aria-current=\"page\">Hoy</a>",
+      "css": ".ds-tab { position: relative; margin-bottom: -1px; padding: 8px 16px; border: 1px solid transparent; border-bottom: none; border-top-left-radius: 6px; border-top-right-radius: 6px; font-family: ui-monospace, 'SF Mono', 'Cascadia Code', 'Roboto Mono', Menlo, Consolas, monospace; font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; transition: color 0.15s; } .ds-tab-active { border-color: #d8cfb8; background: #f5f1e6; color: #1f1c18; z-index: 1; }"
+    },
+    {
+      "name": "Tab (inactive)",
+      "kind": "nav",
+      "refersTo": "tab-inactive",
+      "description": "A non-current tab; recessed one shade darker than the active page.",
+      "html": "<a class=\"ds-tab ds-tab-inactive\" href=\"/all\">Todas</a>",
+      "css": ".ds-tab-inactive { background: #efe8d6; color: #6b6255; } .ds-tab-inactive:hover { color: #1f1c18; }"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The 'Añadir' submit button — inverts like a stamp on hover rather than swapping to a tinted color.",
+      "html": "<button class=\"ds-btn-primary\">Añadir</button>",
+      "css": ".ds-btn-primary { border: 1px solid #1f1c18; border-radius: 2px; padding: 8px 16px; background: transparent; color: #1f1c18; font-family: ui-monospace, 'SF Mono', 'Cascadia Code', 'Roboto Mono', Menlo, Consolas, monospace; font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; transition: background-color 0.15s, color 0.15s; } .ds-btn-primary:hover { background: #1f1c18; color: #f5f1e6; } .ds-btn-primary:focus-visible { outline: 2px solid #b5352a; outline-offset: 2px; }"
+    },
+    {
+      "name": "Task Row",
+      "kind": "custom",
+      "refersTo": "task-row",
+      "description": "The signature component: a ledger line with a tick box, description, tabular time, and an always-visible delete mark. Shown here in its overdue, pending state.",
+      "html": "<li class=\"ds-task-row\"><button class=\"ds-tick\" aria-label=\"Marcar como completada\"><svg viewBox=\"0 0 16 16\" width=\"12\" height=\"12\" fill=\"none\" aria-hidden=\"true\"><path d=\"M3 8.5 L6.5 12 L13 4\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button><span class=\"ds-desc\">Enviar el reporte semanal</span><span class=\"ds-when\">12:47</span><button class=\"ds-delete\" aria-label=\"Eliminar tarea\"><svg viewBox=\"0 0 16 16\" width=\"11\" height=\"11\" fill=\"none\" aria-hidden=\"true\"><path d=\"M3 3 L13 13 M13 3 L3 13\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\"/></svg></button></li>",
+      "css": ".ds-task-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #d8cfb8; } .ds-tick { display: grid; place-items: center; width: 20px; height: 20px; flex-shrink: 0; border: 1px solid #b5352a; color: transparent; transition: color 0.15s, background-color 0.15s; } .ds-tick:hover, .ds-tick:focus-visible { background: #b5352a; color: #f5f1e6; } .ds-desc { flex: 1; font-size: 0.95rem; color: #1f1c18; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ds-when { flex-shrink: 0; font-family: ui-monospace, 'SF Mono', 'Cascadia Code', 'Roboto Mono', Menlo, Consolas, monospace; font-size: 0.75rem; font-weight: 600; color: #b5352a; font-variant-numeric: tabular-nums; } .ds-delete { flex-shrink: 0; color: #6b6255; transition: color 0.15s; } .ds-delete:hover, .ds-delete:focus-visible { color: #b5352a; }"
+    },
+    {
+      "name": "Text Input (ruled line)",
+      "kind": "input",
+      "refersTo": "input-ruled",
+      "description": "The add-task description field — no box, a dashed ruled baseline waiting to be written on.",
+      "html": "<input class=\"ds-input\" placeholder=\"Escribe una tarea…\" />",
+      "css": ".ds-input { width: 100%; background: transparent; border: none; border-bottom: 1px dashed #96876c; padding: 8px 0; font-size: 1rem; color: #1f1c18; caret-color: #b5352a; } .ds-input::placeholder { color: #6b6255; } .ds-input:focus { outline: none; border-bottom-color: #1f1c18; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Day Planner Grid",
+    "overview": "Agenda treats a due date as a page in a day planner, not a field in a form. Opening the app opens today's page: the huge tabular date numeral anchors the view, overdue items are stamped out in the one reserved red, and everything else reads as ruled ledger lines — a tick box, a description, a time, a way to strike it out. The system is deliberately flat and typographic: no cards, no shadows, no icon-as-decoration. Two direction rounds were considered and rejected in favor of this one — 'Courier Tracking Slip' (tasks as parcels in transit) and 'Manual Tab Rail' (a boxed-software reference manual) — both are documented in the direction contract at the top of frontend/src/layouts/Layout.astro for provenance. One deliberate revision happened after first ship: the page originally carried a continuous ruled-paper background texture. The user rejected it explicitly for reading as inconsistent with the row dividers, and asked instead for the page to read as a bordered sheet against a desk-toned backdrop. That is the current, intentional state.",
+    "keyCharacteristics": [
+      "Flat cream 'page' bordered like a sheet, floating on a desk-toned backdrop (border only at ≥640px; full-bleed below it)",
+      "Every date and time numeral in tabular monospace; every other word in a workhorse system sans",
+      "Exactly one accent color (date-red), spent only on overdue/urgent/error meaning",
+      "State changes are marks (a drawn checkmark, a strikethrough), never a second hue",
+      "No shadows, no gradients, no glass"
+    ],
+    "rules": [
+      { "name": "The One Accent Rule", "body": "Date-red appears nowhere except to mark overdue, urgent, or error state.", "section": "colors" },
+      { "name": "The Tabular Rule", "body": "Every date and every time numeral renders in the monospace stack with tabular figures — never the body sans.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "No box-shadow exists anywhere in this codebase. Depth comes from a 1px border and a background-color step, never from blur or offset shadow.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do reserve Date Red exclusively for overdue/urgent/error meaning — grep the codebase before adding a new use.",
+      "Do render every date and time value in the tabular monospace stack, never the body sans.",
+      "Do author icons as hand-drawn inline SVG at a consistent stroke weight; never a Unicode glyph standing in for an icon.",
+      "Do keep functional controls (delete, in particular) visible by default rather than hover-gated — the primary device has no hover.",
+      "Do show state changes as a written mark (a filled tick, a strikethrough) rather than a new color."
+    ],
+    "donts": [
+      "Don't add a decorative background ruled-line texture behind page content — tried and explicitly rejected by the user.",
+      "Don't add box-shadow, glass, or blur anywhere.",
+      "Don't introduce a second accent color.",
+      "Don't use a kicker/eyebrow label above a heading.",
+      "Don't round corners past rounded-sm (2px)."
+    ]
+  }
+}

@@ -5,7 +5,7 @@ import TabRail from "../components/TabRail.astro";
 
 <Layout title="Todas">
   <TabRail active="all" />
-  <main class="mx-auto max-w-2xl px-4 pb-24 sm:px-8">
+  <main class="px-4 pb-24 sm:px-8">
     <header class="pt-6 pb-5">
       <h1 class="text-3xl font-semibold text-ink">Todas las tareas</h1>
     </header>
@@ -38,20 +38,22 @@ import TabRail from "../components/TabRail.astro";
     return iso.slice(0, 10);
   }
 
-  async function handleToggle(task: Task) {
+  async function handleToggle(task: Task): Promise<boolean> {
     try {
       await api.complete(task.id);
       await load();
+      return true;
     } catch (e) {
       loadError.textContent = e instanceof ApiError ? e.message : "No se pudo actualizar la tarea.";
       loadError.classList.remove("hidden");
+      return false;
     }
   }
 
-  async function handleDelete(task: Task, row: HTMLLIElement) {
+  async function handleDelete(task: Task) {
     try {
       await api.remove(task.id);
-      row.remove();
+      await load();
     } catch (e) {
       loadError.textContent = e instanceof ApiError ? e.message : "No se pudo eliminar la tarea.";
       loadError.classList.remove("hidden");

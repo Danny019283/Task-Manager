@@ -2,8 +2,9 @@ import type { Task } from "./api";
 import { formatTime, formatDateLabel, isOverdue } from "./dates";
 
 export interface RowHandlers {
-  onToggle: (task: Task, row: HTMLLIElement) => void;
-  onDelete: (task: Task, row: HTMLLIElement) => void;
+  /** Resolves true on success. On false/rejection the row's tick reverts. */
+  onToggle: (task: Task) => Promise<boolean>;
+  onDelete: (task: Task) => void;
 }
 
 const TICK_SVG = `<svg viewBox="0 0 16 16" width="12" height="12" fill="none" aria-hidden="true">
@@ -17,7 +18,7 @@ const CROSS_SVG = `<svg viewBox="0 0 16 16" width="11" height="11" fill="none" a
 /** A single ruled ledger line: tick box · description · date/time · delete mark. */
 export function taskRow(task: Task, opts: RowHandlers & { showDate?: boolean }): HTMLLIElement {
   const li = document.createElement("li");
-  li.className = "group flex items-center gap-3 py-2.5";
+  li.className = "flex items-center gap-3 py-2.5";
   li.dataset.taskId = String(task.id);
 
   const overdue = isOverdue(task);
@@ -28,20 +29,27 @@ export function taskRow(task: Task, opts: RowHandlers & { showDate?: boolean }):
   tick.dataset.checked = String(task.is_completed);
   tick.setAttribute("aria-label", task.is_completed ? "Completada" : "Marcar como completada");
   tick.innerHTML = TICK_SVG;
-  tick.className = [
+  const uncheckedClass = [
     "grid h-5 w-5 shrink-0 place-items-center border transition-colors",
-    task.is_completed
-      ? "cursor-default border-ink-faint bg-ink text-paper"
-      : overdue
-        ? "border-accent text-transparent hover:bg-accent hover:text-paper"
-        : "border-ink-soft text-transparent hover:border-ink hover:text-ink-soft",
+    overdue
+      ? "border-accent text-transparent hover:bg-accent hover:text-paper"
+      : "border-ink-soft text-transparent hover:border-ink hover:text-ink-soft",
   ].join(" ");
+  tick.className = task.is_completed
+    ? "grid h-5 w-5 shrink-0 place-items-center border transition-colors cursor-default border-ink-faint bg-ink text-paper"
+    : uncheckedClass;
   if (task.is_completed) tick.querySelector("path")!.setAttribute("stroke-dashoffset", "0");
   if (!task.is_completed) {
-    tick.addEventListener("click", () => {
+    tick.addEventListener("click", async () => {
+      tick.disabled = true;
       tick.dataset.checked = "true";
       tick.classList.add("text-paper", "bg-ink", "border-ink-faint");
-      opts.onToggle(task, li);
+      const ok = await opts.onToggle(task);
+      if (!ok) {
+        tick.disabled = false;
+        tick.dataset.checked = "false";
+        tick.className = uncheckedClass;
+      }
     });
   }
 
@@ -65,9 +73,8 @@ export function taskRow(task: Task, opts: RowHandlers & { showDate?: boolean }):
   del.type = "button";
   del.setAttribute("aria-label", "Eliminar tarea");
   del.innerHTML = CROSS_SVG;
-  del.className =
-    "shrink-0 text-ink-soft opacity-0 transition-opacity hover:text-accent focus-visible:opacity-100 group-hover:opacity-100";
-  del.addEventListener("click", () => opts.onDelete(task, li));
+  del.className = "shrink-0 text-ink-soft transition-colors hover:text-accent";
+  del.addEventListener("click", () => opts.onDelete(task));
 
   li.append(tick, desc, when, del);
   return li;

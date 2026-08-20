@@ -15,15 +15,17 @@ const { title } = Astro.props;
     <meta name="generator" content={Astro.generator} />
     <title>{title} · Agenda</title>
   </head>
-  <body class="min-h-dvh bg-paper font-body text-ink antialiased">
+  <body class="min-h-dvh bg-paper-soft font-body text-ink antialiased">
 <!--
 THESIS: The day-planner page you already trust to hold your life holds
 your tasks instead — a due date is today's page, not metadata.
-OWN-WORLD: Cream ruled planner paper (#f5f1e6), near-black ink (#1f1c18),
-hairline rules (#d8cfb8), one date-red accent (#b5352a) spent only on
-today/overdue. Workhorse system sans for text, tabular ui-monospace for
-every date and time numeral. Planner-tab navigation. State is shown as a
-written mark — a tick, a strike — never a second color.
+OWN-WORLD: A cream planner page (#f5f1e6) bordered like a sheet laid on
+the desk (#efe8d6), near-black ink (#1f1c18), hairline rules only
+between ledger rows (#d8cfb8) — never a decorative background grid —
+one date-red accent (#b5352a) spent only on today/overdue. Workhorse
+system sans for text, tabular ui-monospace for every date and time
+numeral. Planner-tab navigation. State is shown as a written mark — a
+tick, a strike — never a second color.
 STORY: Opening the app opens today's page: overdue jumps out in red,
 what's next reads at a glance, adding a task is writing a new ruled
 line, completing one is ticking it off.
@@ -37,6 +39,10 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with
 the finish review, the verdict, DESIGN.md, and every shipping raster
 carrying its provenance.
 -->
-    <slot />
+    <div
+      class="mx-auto min-h-dvh max-w-2xl border-paper-line bg-paper sm:my-8 sm:min-h-0 sm:border-x sm:border-y"
+    >
+      <slot />
+    </div>
   </body>
 </html>

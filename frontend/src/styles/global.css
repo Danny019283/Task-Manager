@@ -19,20 +19,8 @@
 }
 
 html {
-  background: var(--color-paper);
+  background: var(--color-paper-soft);
   color-scheme: light;
-}
-
-body {
-  background-image:
-    repeating-linear-gradient(
-      to bottom,
-      transparent,
-      transparent 34px,
-      var(--color-paper-line) 34px,
-      var(--color-paper-line) 35px
-    );
-  background-attachment: local;
 }
 
 ::selection {
