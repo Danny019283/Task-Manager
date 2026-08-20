@@ -1,0 +1,106 @@
+---
+import Layout from "../layouts/Layout.astro";
+import TabRail from "../components/TabRail.astro";
+---
+
+<Layout title="Todas">
+  <TabRail active="all" />
+  <main class="mx-auto max-w-2xl px-4 pb-24 sm:px-8">
+    <header class="pt-6 pb-5">
+      <h1 class="text-3xl font-semibold text-ink">Todas las tareas</h1>
+    </header>
+
+    <div id="groups"></div>
+
+    <p id="empty" class="hidden py-10 text-center text-sm text-ink-soft">
+      No hay tareas registradas todavía.
+    </p>
+    <p id="loading" class="py-10 text-center font-mono text-xs text-ink-soft">Cargando…</p>
+    <p
+      id="load-error"
+      class="mt-6 hidden rounded-sm border border-accent/40 bg-accent-soft px-3 py-2 text-sm text-accent"
+    >
+    </p>
+  </main>
+</Layout>
+
+<script>
+  import { api, ApiError, type Task } from "../lib/api";
+  import { isOverdue, formatDateLabel } from "../lib/dates";
+  import { taskRow } from "../lib/render";
+
+  const groups = document.getElementById("groups")!;
+  const empty = document.getElementById("empty")!;
+  const loading = document.getElementById("loading")!;
+  const loadError = document.getElementById("load-error")!;
+
+  function dayKey(iso: string) {
+    return iso.slice(0, 10);
+  }
+
+  async function handleToggle(task: Task) {
+    try {
+      await api.complete(task.id);
+      await load();
+    } catch (e) {
+      loadError.textContent = e instanceof ApiError ? e.message : "No se pudo actualizar la tarea.";
+      loadError.classList.remove("hidden");
+    }
+  }
+
+  async function handleDelete(task: Task, row: HTMLLIElement) {
+    try {
+      await api.remove(task.id);
+      row.remove();
+    } catch (e) {
+      loadError.textContent = e instanceof ApiError ? e.message : "No se pudo eliminar la tarea.";
+      loadError.classList.remove("hidden");
+    }
+  }
+
+  async function load() {
+    loading.classList.remove("hidden");
+    try {
+      const tasks = await api.list();
+      empty.classList.toggle("hidden", tasks.length !== 0);
+
+      const sorted = [...tasks].sort(
+        (a, b) => +new Date(a.date_limit) - +new Date(b.date_limit),
+      );
+      const byDay = new Map<string, Task[]>();
+      for (const t of sorted) {
+        const key = dayKey(t.date_limit);
+        if (!byDay.has(key)) byDay.set(key, []);
+        byDay.get(key)!.push(t);
+      }
+
+      groups.innerHTML = "";
+      for (const [, dayTasks] of byDay) {
+        const section = document.createElement("section");
+        section.className = "mb-6";
+
+        const h2 = document.createElement("h2");
+        const anyOverdue = dayTasks.some((t) => isOverdue(t));
+        h2.className = `mb-1 font-mono text-xs uppercase tracking-[0.14em] ${anyOverdue ? "text-accent" : "text-ink-soft"}`;
+        h2.textContent = formatDateLabel(dayTasks[0].date_limit);
+        section.appendChild(h2);
+
+        const ul = document.createElement("ul");
+        ul.className = "divide-y divide-paper-line";
+        for (const t of dayTasks) {
+          ul.appendChild(taskRow(t, { onToggle: handleToggle, onDelete: handleDelete }));
+        }
+        section.appendChild(ul);
+        groups.appendChild(section);
+      }
+    } catch (e) {
+      loadError.textContent =
+        e instanceof ApiError ? e.message : "No se pudieron cargar las tareas.";
+      loadError.classList.remove("hidden");
+    } finally {
+      loading.classList.add("hidden");
+    }
+  }
+
+  load();
+</script>

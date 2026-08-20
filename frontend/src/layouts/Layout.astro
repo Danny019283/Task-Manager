@@ -1,0 +1,42 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+---
+
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title} · Agenda</title>
+  </head>
+  <body class="min-h-dvh bg-paper font-body text-ink antialiased">
+<!--
+THESIS: The day-planner page you already trust to hold your life holds
+your tasks instead — a due date is today's page, not metadata.
+OWN-WORLD: Cream ruled planner paper (#f5f1e6), near-black ink (#1f1c18),
+hairline rules (#d8cfb8), one date-red accent (#b5352a) spent only on
+today/overdue. Workhorse system sans for text, tabular ui-monospace for
+every date and time numeral. Planner-tab navigation. State is shown as a
+written mark — a tick, a strike — never a second color.
+STORY: Opening the app opens today's page: overdue jumps out in red,
+what's next reads at a glance, adding a task is writing a new ruled
+line, completing one is ticking it off.
+FIRST VIEWPORT: Planner tab strip (Hoy / Todas) top; huge tabular date
+heading below; a blank ruled "add a task" entry line; an OVERDUE ledger
+block in accent red when any exist; a ruled list of what's due next,
+sorted by date_limit.
+FORM: The Day Planner Grid — IMPECCABLE'S PICK on the direction round
+(assigned candidate: Courier Tracking Slip), seed key e9ceb541.
+FINISH: unreviewed and undocumented is unfinished; this build ends with
+the finish review, the verdict, DESIGN.md, and every shipping raster
+carrying its provenance.
+-->
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,191 @@
+---
+import Layout from "../layouts/Layout.astro";
+import TabRail from "../components/TabRail.astro";
+---
+
+<Layout title="Hoy">
+  <TabRail active="today" />
+  <main class="mx-auto max-w-2xl px-4 pb-24 sm:px-8">
+    <header class="pt-6 pb-4">
+      <p id="weekday" class="font-mono text-xs tracking-[0.2em] text-ink-soft uppercase">
+        &nbsp;
+      </p>
+      <div class="flex items-baseline gap-3">
+        <span id="day-num" class="font-mono text-6xl leading-none font-semibold text-ink"
+        ></span>
+        <span id="month-year" class="text-lg text-ink-soft"></span>
+      </div>
+    </header>
+
+    <form id="add-form" class="mb-8 border-b border-paper-line pb-5">
+      <label class="sr-only" for="add-desc">Nueva tarea</label>
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-end">
+        <input
+          id="add-desc"
+          required
+          placeholder="Escribe una tarea…"
+          autocomplete="off"
+          class="flex-1 border-b border-dashed border-ink-faint bg-transparent py-2 text-base text-ink placeholder:text-ink-soft focus:border-ink focus:outline-none"
+        />
+        <input
+          id="add-date"
+          type="datetime-local"
+          required
+          class="w-full border-b border-dashed border-ink-faint bg-transparent py-2 font-mono text-sm text-ink-soft focus:border-ink focus:outline-none sm:w-44"
+        />
+        <button
+          type="submit"
+          class="shrink-0 rounded-sm border border-ink px-4 py-2 font-mono text-xs tracking-wide text-ink uppercase transition-colors hover:bg-ink hover:text-paper"
+        >
+          Añadir
+        </button>
+      </div>
+      <p id="add-error" class="mt-2 hidden font-mono text-xs text-accent"></p>
+    </form>
+
+    <section id="overdue-section" class="mb-8 hidden">
+      <h2 class="mb-1 font-mono text-xs tracking-[0.14em] text-accent uppercase">Vencidas</h2>
+      <ul id="overdue-list" class="divide-y divide-paper-line"></ul>
+    </section>
+
+    <section id="upcoming-section">
+      <h2 class="mb-1 font-mono text-xs tracking-[0.14em] text-ink-soft uppercase">Próximas</h2>
+      <ul id="upcoming-list" class="divide-y divide-paper-line"></ul>
+      <p id="upcoming-empty" class="hidden py-10 text-center text-sm text-ink-soft">
+        Página en blanco — nada pendiente por ahora.
+      </p>
+      <p id="upcoming-loading" class="py-10 text-center font-mono text-xs text-ink-soft">
+        Cargando…
+      </p>
+    </section>
+
+    <a
+      href="/all"
+      id="see-all"
+      class="mt-8 hidden font-mono text-xs tracking-wide text-ink-soft uppercase underline decoration-paper-line underline-offset-4 hover:text-ink"
+    >
+      Ver todas las tareas →
+    </a>
+
+    <p
+      id="load-error"
+      class="mt-6 hidden rounded-sm border border-accent/40 bg-accent-soft px-3 py-2 text-sm text-accent"
+    >
+    </p>
+  </main>
+</Layout>
+
+<script>
+  import { api, ApiError, type Task } from "../lib/api";
+  import { todayHeading, isOverdue } from "../lib/dates";
+  import { taskRow } from "../lib/render";
+
+  const now = new Date();
+  const heading = todayHeading(now);
+  document.getElementById("weekday")!.textContent = heading.weekday;
+  document.getElementById("day-num")!.textContent = heading.day;
+  document.getElementById("month-year")!.textContent = `${heading.month} ${heading.year}`;
+
+  const overdueSection = document.getElementById("overdue-section")!;
+  const overdueList = document.getElementById("overdue-list") as HTMLUListElement;
+  const upcomingList = document.getElementById("upcoming-list") as HTMLUListElement;
+  const upcomingEmpty = document.getElementById("upcoming-empty")!;
+  const upcomingLoading = document.getElementById("upcoming-loading")!;
+  const seeAll = document.getElementById("see-all")!;
+  const loadError = document.getElementById("load-error")!;
+  const addForm = document.getElementById("add-form") as HTMLFormElement;
+  const addDesc = document.getElementById("add-desc") as HTMLInputElement;
+  const addDate = document.getElementById("add-date") as HTMLInputElement;
+  const addError = document.getElementById("add-error")!;
+
+  import("../lib/dates").then(({ defaultDueValue }) => {
+    addDate.value = defaultDueValue();
+  });
+
+  function removeRow(row: HTMLLIElement) {
+    row.remove();
+    if (!overdueList.children.length) overdueSection.classList.add("hidden");
+    if (!upcomingList.children.length) upcomingEmpty.classList.remove("hidden");
+  }
+
+  async function handleToggle(task: Task, row: HTMLLIElement) {
+    try {
+      await api.complete(task.id);
+      removeRow(row);
+    } catch (e) {
+      loadError.textContent = e instanceof ApiError ? e.message : "No se pudo actualizar la tarea.";
+      loadError.classList.remove("hidden");
+    }
+  }
+
+  async function handleDelete(task: Task, row: HTMLLIElement) {
+    try {
+      await api.remove(task.id);
+      removeRow(row);
+    } catch (e) {
+      loadError.textContent = e instanceof ApiError ? e.message : "No se pudo eliminar la tarea.";
+      loadError.classList.remove("hidden");
+    }
+  }
+
+  async function load() {
+    upcomingLoading.classList.remove("hidden");
+    try {
+      const tasks = await api.list();
+      const pending = tasks.filter((t) => !t.is_completed);
+      const overdue = pending.filter((t) => isOverdue(t)).sort(
+        (a, b) => +new Date(a.date_limit) - +new Date(b.date_limit),
+      );
+      const soon = new Date(now);
+      soon.setDate(soon.getDate() + 3);
+      const upcoming = pending
+        .filter((t) => !isOverdue(t) && new Date(t.date_limit) <= soon)
+        .sort((a, b) => +new Date(a.date_limit) - +new Date(b.date_limit));
+      const laterCount = pending.length - overdue.length - upcoming.length;
+
+      overdueList.innerHTML = "";
+      for (const t of overdue) {
+        overdueList.appendChild(taskRow(t, { onToggle: handleToggle, onDelete: handleDelete }));
+      }
+      overdueSection.classList.toggle("hidden", overdue.length === 0);
+
+      upcomingList.innerHTML = "";
+      for (const t of upcoming) {
+        upcomingList.appendChild(
+          taskRow(t, { onToggle: handleToggle, onDelete: handleDelete, showDate: true }),
+        );
+      }
+      upcomingEmpty.classList.toggle("hidden", upcoming.length !== 0 || overdue.length !== 0);
+      seeAll.classList.toggle("hidden", laterCount <= 0);
+      if (laterCount > 0) {
+        seeAll.textContent = `Ver ${laterCount} tarea${laterCount === 1 ? "" : "s"} más →`;
+      }
+    } catch (e) {
+      loadError.textContent =
+        e instanceof ApiError ? e.message : "No se pudieron cargar las tareas.";
+      loadError.classList.remove("hidden");
+    } finally {
+      upcomingLoading.classList.add("hidden");
+    }
+  }
+
+  addForm.addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    addError.classList.add("hidden");
+    const description = addDesc.value.trim();
+    const dateLimit = addDate.value;
+    if (!description || !dateLimit) return;
+    try {
+      await api.create({ description, date_limit: dateLimit });
+      addDesc.value = "";
+      const { defaultDueValue } = await import("../lib/dates");
+      addDate.value = defaultDueValue();
+      await load();
+    } catch (e) {
+      addError.textContent = e instanceof ApiError ? e.message : "No se pudo crear la tarea.";
+      addError.classList.remove("hidden");
+    }
+  });
+
+  load();
+</script>

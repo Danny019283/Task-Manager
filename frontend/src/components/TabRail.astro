@@ -1,0 +1,34 @@
+---
+interface Props {
+  active: "today" | "all";
+}
+const { active } = Astro.props;
+
+const tabs = [
+  { id: "today", href: "/", label: "Hoy" },
+  { id: "all", href: "/all", label: "Todas" },
+] as const;
+---
+
+<nav aria-label="Navegación del planificador" class="flex gap-1 px-4 pt-4 sm:px-8">
+  {
+    tabs.map((tab) => {
+      const isActive = tab.id === active;
+      return (
+        <a
+          href={tab.href}
+          aria-current={isActive ? "page" : undefined}
+          class:list={[
+            "relative -mb-px rounded-t-md border border-b-0 px-4 py-2 font-mono text-xs tracking-[0.14em] uppercase transition-colors",
+            isActive
+              ? "border-paper-line bg-paper text-ink z-10"
+              : "border-transparent bg-paper-soft text-ink-soft hover:text-ink",
+          ]}
+        >
+          {tab.label}
+        </a>
+      );
+    })
+  }
+</nav>
+<div class="border-b border-paper-line px-4 sm:px-8" />

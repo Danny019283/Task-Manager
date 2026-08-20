@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #f5f1e6;
+  --color-paper-soft: #efe8d6;
+  --color-paper-line: #d8cfb8;
+  --color-ink: #1f1c18;
+  --color-ink-soft: #6b6255;
+  --color-ink-faint: #96876c;
+  --color-accent: #b5352a;
+  --color-accent-soft: #b5352a1f;
+
+  --font-body:
+    "Segoe UI", ui-sans-serif, system-ui, -apple-system, Roboto, Helvetica,
+    Arial, sans-serif;
+  --font-mono:
+    ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas,
+    monospace;
+}
+
+html {
+  background: var(--color-paper);
+  color-scheme: light;
+}
+
+body {
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 34px,
+      var(--color-paper-line) 34px,
+      var(--color-paper-line) 35px
+    );
+  background-attachment: local;
+}
+
+::selection {
+  background: var(--color-accent-soft);
+  color: var(--color-ink);
+}
+
+input {
+  caret-color: var(--color-accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+* {
+  scrollbar-color: var(--color-ink-faint) var(--color-paper-soft);
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-paper-soft);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-ink-faint);
+  border-radius: 999px;
+  border: 2px solid var(--color-paper-soft);
+}
+
+/* the drawn tick: a single authored stroke, not a swap */
+.tick-mark {
+  stroke-dasharray: 16;
+  stroke-dashoffset: 16;
+  transition: stroke-dashoffset 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-checked="true"] .tick-mark {
+  stroke-dashoffset: 0;
+}
