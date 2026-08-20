@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List
 
 from ..data_access.Itask_repository import ITaskRepository
@@ -8,7 +9,6 @@ from .task_mapper import TaskMapper as task_mapper
 from .exeptions import (
     InvalidTaskDataError,
     TaskNotFoundError,
-    NoTasksFoundError,
     TaskPersistenceError,
 )
 
@@ -20,7 +20,11 @@ class TaskApplication:
     def register_task(self, task_dto: CreateTaskDTO):
         if task_dto is None:
             raise InvalidTaskDataError()
-        task = task_mapper.to_entity(task_dto)
+
+        try:
+            task = task_mapper.to_entity(task_dto)
+        except ValueError as error:
+            raise InvalidTaskDataError(str(error)) from error
 
         try:
             created_task = self.__task_repo.create_task(task)
@@ -44,7 +48,10 @@ class TaskApplication:
         if task is None:
             raise TaskNotFoundError(task_dto.id)
 
-        task_updated = task_mapper.apply_update(task, task_dto)
+        try:
+            task_updated = task_mapper.apply_update(task, task_dto)
+        except ValueError as error:
+            raise InvalidTaskDataError(str(error)) from error
 
         try:
             saved_task = self.__task_repo.update_task(task_updated)
@@ -109,9 +116,6 @@ class TaskApplication:
             tasks: List[Task] = self.__task_repo.get_all()
         except Exception as error:
             raise TaskPersistenceError("get_all", error) from error
-
-        if not tasks:
-            raise NoTasksFoundError()
 
         tasks_dto: List[TaskResponseDTO] = []
         for task in tasks:

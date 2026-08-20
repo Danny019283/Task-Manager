@@ -1,15 +1,30 @@
 from datetime import datetime
 
 class Task:
-    def __init__(self, description: str, limit_date: datetime, is_completed: bool = False, id: int | None = None):
-        self.validate_date(limit_date)
+    def __init__(self, description: str, limit_date: datetime, is_completed: bool = False, id = None):
         self.__id = id
         self.__description = description
         self.__limit_date = limit_date
         self.__is_completed = is_completed
+        
+    @classmethod
+    def crear(cls, description: str, limit_date: datetime):
+        cls._validate_date(limit_date)
+        return cls(description, limit_date, False, None)
+
+    @classmethod
+    def actualizar(cls, task: "Task", description: str = None, limit_date: datetime = None, is_completed: bool = None) -> "Task":
+        if limit_date is not None:
+            cls._validate_date(limit_date)
+        return cls(
+            description=description if description is not None else task.description,
+            limit_date=limit_date if limit_date is not None else task.limit_date,
+            is_completed=is_completed if is_completed is not None else task.is_completed,
+            id=task.id,
+        )
 
     @staticmethod
-    def validate_date(date: datetime) -> None:
+    def _validate_date(date: datetime) -> None:
         if date < datetime.now():
             raise ValueError("limit_date cannot be earlier than the current date")
 

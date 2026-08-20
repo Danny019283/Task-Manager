@@ -82,8 +82,27 @@ def test_not_equal_when_description_differs():
     assert task_a != task_b
 
 
-def test_init_raises_value_error_when_limit_date_is_in_the_past():
+def test_init_does_not_validate_limit_date_in_the_past():
+    past_date = datetime.now() - timedelta(days=1)
+
+    task = Task("Write report", past_date)
+
+    assert task.limit_date == past_date
+
+
+def test_crear_raises_value_error_when_limit_date_is_in_the_past():
     past_date = datetime.now() - timedelta(days=1)
 
     with pytest.raises(ValueError):
-        Task("Write report", past_date)
+        Task.crear("Write report", past_date)
+
+
+def test_crear_builds_task_not_completed_when_limit_date_is_in_the_future():
+    limit_date = _future_date()
+
+    task = Task.crear("Write report", limit_date)
+
+    assert task.description == "Write report"
+    assert task.limit_date == limit_date
+    assert task.is_completed is False
+    assert task.id is None

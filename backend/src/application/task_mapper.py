@@ -5,20 +5,11 @@ from ..routers.task_dtos import CreateTaskDTO, UpdateTaskDTO, TaskResponseDTO
 class TaskMapper:
     @staticmethod
     def to_entity(dto: CreateTaskDTO) -> Task:
-        return Task(
-            description=dto.description,
-            limit_date=dto.date_limit,
-            is_completed=dto.is_completed,
-        )
+        return Task.crear(dto.description, dto.date_limit)
 
     @staticmethod
     def apply_update(task: Task, dto: UpdateTaskDTO) -> Task:
-        return Task(
-            description=dto.description if dto.description is not None else task.description,
-            limit_date=dto.date_limit if dto.date_limit is not None else task.limit_date,
-            is_completed=dto.is_completed if dto.is_completed is not None else task.is_completed,
-            id=task.id,
-        )
+        return Task.actualizar(task, dto.description, dto.date_limit, dto.is_completed)
 
     @staticmethod
     def to_response_dto(task: Task) -> TaskResponseDTO:
