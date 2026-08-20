@@ -1,5 +1,8 @@
 # Tooling caches
 .pytest_cache/
 
+# Editor settings (per-developer)
+.vscode/
+
 # Local, per-developer Claude Code settings (not shared)
 .claude/settings.local.json
