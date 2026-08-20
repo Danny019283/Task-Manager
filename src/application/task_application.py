@@ -27,7 +27,7 @@ class TaskApplication:
         except Exception as error:
             raise TaskPersistenceError("create", error) from error
 
-        self.__notifier.send_notification("88621532", "88621532", created_task)
+        self.__notifier.send_notification(created_task)
 
         return task_mapper.to_response_dto(created_task)
 
@@ -72,7 +72,7 @@ class TaskApplication:
         except Exception as error:
             raise TaskPersistenceError("update", error) from error
 
-        self.__notifier.send_notification("88621532", "88621532", saved_task)
+        self.__notifier.send_notification(saved_task)
 
         return task_mapper.to_response_dto(saved_task)
 
