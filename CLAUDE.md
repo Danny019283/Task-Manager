@@ -26,6 +26,37 @@ The backend talks to a real Supabase Postgres project — there is no local/mock
 
 `backend/src/data_access/database/.env` (`DATABASE_URL=...`) and `backend/src/model/services/.env` (`CALLMEBOT_PHONE=...`, `CALLMEBOT_APIKEY=...`) hold real credentials and are gitignored via `backend/src/.gitignore`. Never commit them, and never print their contents — if you need to check their shape, inspect structure only (e.g. `grep -oE '^[A-Z_]+=' <file>`), not values.
 
+## Consuming the API (for frontend work)
+
+Start the backend first (see Commands below); once it's running you generally shouldn't need to open any backend source to build against it:
+
+- **Interactive docs (source of truth)**: `http://127.0.0.1:8000/docs` (Swagger UI) and `http://127.0.0.1:8000/openapi.json` (raw schema, e.g. to generate a typed client). If this doc and `/docs` ever disagree, trust `/docs`.
+- **Base URL**: `http://127.0.0.1:8000` (default `uvicorn` port; add `--port` to change it). All task endpoints are under `/tasks`.
+- **CORS**: open to any origin (`main.py` adds `CORSMiddleware` with `allow_origins=["*"]`), so a browser frontend on any dev port can call it directly.
+- **Dates**: `date_limit` is a full ISO 8601 datetime string, e.g. `"2026-08-21T00:24:56.024796"` (no timezone suffix — treat it as local/naive, don't append `Z`). `date_limit` must not be in the past or the API rejects the request.
+- **Errors**: every non-2xx response is JSON `{"detail": "<message>"}`, except FastAPI's own request-validation failures (e.g. missing/malformed field), which return `422` with `{"detail": [{...pydantic error...}]}`.
+
+### Endpoints
+
+| Method | Path | Body | Success | Notes |
+|---|---|---|---|---|
+| POST | `/tasks/register` | `CreateTaskDTO` | `201` → `TaskResponseDTO` | Creates a task; also fires a best-effort WhatsApp notification (never blocks/fails the response). |
+| GET | `/tasks/` | — | `200` → `TaskResponseDTO[]` | `[]` when there are no tasks. |
+| GET | `/tasks/{task_id}` | — | `200` → `TaskResponseDTO` | `404` if `task_id` doesn't exist. |
+| PUT | `/tasks/{task_id}` | `UpdateTaskDTO` | `200` → `TaskResponseDTO` | Partial update — omit fields you don't want to change. Any `id` in the body is ignored/overwritten by the path's `task_id`. `404` if it doesn't exist. |
+| PUT | `/tasks/{task_id}/complete` | — | `200` → `TaskResponseDTO` | Marks the task completed; fires a notification. `404` if it doesn't exist. |
+| DELETE | `/tasks/{task_id}` | — | `204`, empty body | `404` if it doesn't exist. |
+
+### DTOs
+
+```
+CreateTaskDTO   { description: string, date_limit: datetime, is_completed: boolean }
+UpdateTaskDTO   { description?: string, date_limit?: datetime, is_completed?: boolean }  // id comes from the URL, not the body
+TaskResponseDTO { id: int, description: string, date_limit: datetime, is_completed: boolean }
+```
+
+`POST /tasks/register` requires all three `CreateTaskDTO` fields (`is_completed` is normally `false` for a new task, but the API accepts any value). Every other endpoint returns/consumes `TaskResponseDTO`-shaped data as described above.
+
 ## Commands
 
 Everything runs through the `uv`-managed venv at `backend/src/.venv` (Python 3.14).

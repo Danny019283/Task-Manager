@@ -6,7 +6,6 @@ from typing import Optional
 class CreateTaskDTO(BaseModel):
     description: str
     date_limit: datetime
-    is_completed: bool
     
 class UpdateTaskDTO(BaseModel):
     id: int

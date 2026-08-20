@@ -14,7 +14,6 @@ from ..application.task_application import TaskApplication
 from ..application.exeptions import (
     InvalidTaskDataError,
     TaskNotFoundError,
-    NoTasksFoundError,
     TaskPersistenceError,
 )
 from ..data_access.database.datebase_connection import get_session
@@ -65,8 +64,6 @@ def get_task_by_id(task_id: int, task_app: TaskApplication = Depends(get_task_ap
 def get_all_tasks(task_app: TaskApplication = Depends(get_task_application)):
     try:
         return task_app.get_all_tasks()
-    except NoTasksFoundError as error:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, str(error)) from error
     except TaskPersistenceError as error:
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, str(error)) from error
 
