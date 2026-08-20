@@ -9,7 +9,7 @@ import os
 from .Inotifier import Inotifier
 from ..entities.task import Task
 
-load_dotenv(Path(__file__).resolve().parent / ".env")
+load_dotenv(Path(__file__).resolve().parents[3] / ".env")
 
 logger = logging.getLogger(__name__)
 

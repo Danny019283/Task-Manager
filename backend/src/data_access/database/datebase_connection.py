@@ -5,7 +5,7 @@ from typing import Iterator
 from dotenv import load_dotenv
 from sqlmodel import Session, SQLModel, create_engine
 
-load_dotenv(Path(__file__).resolve().parent / ".env")
+load_dotenv(Path(__file__).resolve().parents[3] / ".env")
 
 DATABASE_URL = os.environ["DATABASE_URL"]
 
