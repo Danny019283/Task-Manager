@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project state
 
-Task manager application. The backend is a working Python/FastAPI service backed by a live Supabase Postgres database, with WhatsApp notifications via CallMeBot. `frontend/` is still empty, not started. The backend has a dependency manifest (`backend/src/pyproject.toml` + `uv.lock`, managed with `uv`) and a small pytest suite; there is no linter/formatter configured.
+Task manager application. The backend is a working Python/FastAPI service backed by a live Supabase Postgres database, with WhatsApp notifications via CallMeBot. `frontend/` is still empty, not started. The backend has a dependency manifest (`backend/pyproject.toml` + `uv.lock`, managed with `uv`) and a small pytest suite; there is no linter/formatter configured.
 
 ## Structure
 
@@ -24,7 +24,7 @@ The backend talks to a real Supabase Postgres project — there is no local/mock
 
 ## Secrets
 
-`backend/src/data_access/database/.env` (`DATABASE_URL=...`) and `backend/src/model/services/.env` (`CALLMEBOT_PHONE=...`, `CALLMEBOT_APIKEY=...`) hold real credentials and are gitignored via `backend/src/.gitignore`. Never commit them, and never print their contents — if you need to check their shape, inspect structure only (e.g. `grep -oE '^[A-Z_]+=' <file>`), not values.
+`backend/src/data_access/database/.env` (`DATABASE_URL=...`) and `backend/src/model/services/.env` (`CALLMEBOT_PHONE=...`, `CALLMEBOT_APIKEY=...`) hold real credentials and are gitignored via `backend/.gitignore`. Never commit them, and never print their contents — if you need to check their shape, inspect structure only (e.g. `grep -oE '^[A-Z_]+=' <file>`), not values.
 
 ## Consuming the API (for frontend work)
 
@@ -59,11 +59,11 @@ TaskResponseDTO { id: int, description: string, date_limit: datetime, is_complet
 
 ## Commands
 
-Everything runs through the `uv`-managed venv at `backend/src/.venv` (Python 3.14).
+Everything runs through the `uv`-managed venv at `backend/.venv` (Python 3.14).
 
-- Install/sync dependencies: `cd backend/src && uv sync`
-- Run the API: `cd backend && src/.venv/bin/uvicorn src.main:app --reload` — must run with `backend/` as the working directory (not `backend/src/`), since the app's relative imports are rooted at `src`.
-- Run tests: `cd /home/danny/Proyectos/task_manager && backend/src/.venv/bin/python -m pytest backend/src/tests` — must run with the repo root (one level above `backend/`) as the working directory, since `tests/test_task.py` imports as `backend.src...`.
+- Install/sync dependencies: `cd backend && uv sync`
+- Run the API: `cd backend && .venv/bin/uvicorn src.main:app --reload` — must run with `backend/` as the working directory, since the app's relative imports are rooted at `src`.
+- Run tests: `cd /home/danny/Proyectos/task_manager && backend/.venv/bin/python -m pytest backend/src/tests` — must run with the repo root (one level above `backend/`) as the working directory, since `tests/test_task.py` imports as `backend.src...`.
 
 There is no lint or build tooling configured.
 
