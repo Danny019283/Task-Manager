@@ -1,4 +1,12 @@
 from datetime import datetime
+from zoneinfo import ZoneInfo
+
+_COSTA_RICA_TZ = ZoneInfo("America/Costa_Rica")
+
+
+def _now() -> datetime:
+    return datetime.now(_COSTA_RICA_TZ).replace(tzinfo=None)
+
 
 class Task:
     def __init__(self, description: str, limit_date: datetime, is_completed: bool = False, id = None):
@@ -25,7 +33,7 @@ class Task:
 
     @staticmethod
     def _validate_date(date: datetime) -> None:
-        if date < datetime.now():
+        if date < _now():
             raise ValueError("limit_date cannot be earlier than the current date")
 
     @property
@@ -48,7 +56,7 @@ class Task:
         self.__is_completed = True
 
     def is_overdue(self) -> bool:
-        return not self.__is_completed and self.__limit_date < datetime.now()
+        return not self.__is_completed and self.__limit_date < _now()
 
     def __repr__(self) -> str:
         return (
